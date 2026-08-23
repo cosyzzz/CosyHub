@@ -2,8 +2,10 @@ local Players      = game:GetService("Players")
 local Player       = Players.LocalPlayer
 local RunService   = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local VirtualUser  = game:GetService("VirtualUser")
+local UserInputService  = game:GetService("UserInputService")
+local UIS               = UserInputService
+local VirtualUser       = game:GetService("VirtualUser")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local Custom = {}
 Custom.ColorRGB = Color3.fromRGB(150, 150, 155)
