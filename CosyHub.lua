@@ -242,7 +242,9 @@ local function OpenClose()
     local _dotValid = false
     RunService.RenderStepped:Connect(function()
         if not LineBox.Visible then _dotValid = false; return end
-        local vp = Camera.ViewportSize
+        local _cam = workspace.CurrentCamera
+        if not _cam then _dotValid = false; return end
+        local vp = _cam.ViewportSize
         
         local barPos = Bar.Position
         local barCX  = vp.X * barPos.X.Scale + barPos.X.Offset
@@ -1443,7 +1445,7 @@ function CosyHub:CreateWindow(Config)
         local bsy      = savedPos.Y.Scale
 
         local Bar    = Open_Close._bar
-        local barAbs = Bar and Bar.AbsolutePosition or Vector2.new(Camera.ViewportSize.X * 0.5 - 84, 10)
+        local barAbs = Bar and Bar.AbsolutePosition or Vector2.new((workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X or 0) * 0.5 - 84, 10)
         local barSz  = Bar and Bar.AbsoluteSize     or Vector2.new(168, 46)
         local barCX  = barAbs.X + barSz.X * 0.5
         local barCY  = barAbs.Y + barSz.Y * 0.5
@@ -1469,7 +1471,8 @@ function CosyHub:CreateWindow(Config)
 
             local TRI_SL  = 10
             local GRAVITY = 400   
-            local vp      = Camera.ViewportSize
+            local _cam2   = workspace.CurrentCamera
+            local vp      = _cam2 and _cam2.ViewportSize or Vector2.new(1280, 720)
             local WHITE   = Color3.fromRGB(255, 255, 255)
             local SHAPES  = {"sq","cr","dm","tr","sq","cr","dm","tr","sq","dm","tr","cr","sq","dm","tr","cr","sq","cr","tr","sq","dm","cr","tr","sq","dm","cr","tr","dm","sq","tr","cr","dm","sq","tr","cr","sq","dm","tr","cr","dm","sq","cr","dm","tr","sq","cr","dm","tr","sq","dm","tr","cr","sq","dm","tr","cr","sq","cr","tr","sq","dm","cr","tr","sq","dm","cr","tr","dm","sq","tr","cr","dm","sq","tr","cr","sq","dm","tr","cr","dm"}
             local BAR_SHP = {"sq","cr","dm","sq","cr","tr","dm","sq","cr","dm","sq","cr","tr","dm","sq","cr","dm","sq","tr","cr","dm","sq","cr","dm","sq"}
