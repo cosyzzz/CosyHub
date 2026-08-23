@@ -1,299 +1,376 @@
-# CosyHub — Roblox UI Framework
+# CosyHub
 
-CosyHub is a lightweight UI library for Roblox executors.
+A lightweight, polished Roblox UI framework with a floating SmartBar, animated windows, search, color pickers, and more.
 
----
-
-## Load Framework
+Load it in any script with a single line:
 
 ```lua
-local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/cosyzzz/CosyHub/refs/heads/main/CosyHub"))()
-```
-
-Or if the file is in the same directory:
-```lua
-local CosyHub = loadstring(readfile("CosyHub.lua"))()
+local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/CosyHub/main/CosyHub.lua", true))()
 ```
 
 ---
 
-## Create Window
+## Quick Start
 
 ```lua
+local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/CosyHub/main/CosyHub.lua", true))()
+
 local Window = CosyHub:CreateWindow({
     Title       = "My Script",
-    Description = "by Dev",
-    TabWidth    = 110,
-    SizeUi      = UDim2.fromOffset(600, 360),
+    Description = "by You",
+    TabWidth    = 130,
+    SizeUi      = UDim2.fromOffset(580, 340),
 })
-```
 
-| Parameter | Type | Description |
-|---|---|---|
-| `Title` | string | Main title displayed on the topbar |
-| `Description` | string | Red sub-title shown next to the title |
-| `TabWidth` | number | Width of the left tab column (default: 120) |
-| `SizeUi` | UDim2 | Overall size of the window |
+local Tab     = Window:CreateTab({ Name = "Main", Icon = "rbxassetid://4483362458" })
+local Section = Tab:AddSection("Features", true)
 
----
-
-## Create Tab
-
-```lua
-local MyTab = Window:CreateTab({
-    Name = "Main",
-    Icon = "rbxassetid://4483362458",
-})
-```
-
-`CreateTab` returns a Tab object. Call `:AddSection()` from this object.
-
----
-
-## Create Section
-
-```lua
-local Sec = MyTab:AddSection("Section Title", true)
-```
-
-| Parameter | Type | Description |
-|---|---|---|
-| `Title` | string | Section title |
-| `OpenSection` | bool | `true` = expanded by default, `false` = collapsed |
-
-`AddSection` returns a Section object. Use it to add elements below.
-
----
-
-## Elements
-
-### Toggle
-
-```lua
-local toggle = Sec:AddToggle({
-    Title    = "Enable Feature",
-    Content  = "Optional description",
+Section:AddToggle({
+    Title    = "Enable Hack",
     Default  = false,
     Callback = function(value)
         print("Toggle is now:", value)
     end,
 })
-
--- Set from code:
-toggle:Set(true)
-
--- Read value:
-print(toggle.Value)
 ```
 
 ---
 
-### Slider
+## API Reference
+
+### `CosyHub:CreateWindow(config)`
+
+Creates the main window. Returns a `Window` object.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `Title` | string | `""` | Text shown in the window title bar |
+| `Description` | string | `""` | Sub-text beneath the title |
+| `TabWidth` | number | `120` | Width of the left tab sidebar in pixels |
+| `SizeUi` | UDim2 | `UDim2.fromOffset(580, 340)` | Total window size |
 
 ```lua
-local slider = Sec:AddSlider({
-    Title     = "Speed",
-    Content   = "Movement speed",
-    Min       = 1,
-    Max       = 100,
-    Increment = 1,
-    Default   = 16,
-    Callback  = function(value)
-        print("Slider value:", value)
-    end,
-})
-
-slider:Set(50)
-print(slider.Value)
-```
-
----
-
-### Button
-
-```lua
-Sec:AddButton({
-    Title    = "Click Me",
-    Content  = "Button description",
-    Icon     = "rbxassetid://7734010488",
-    Callback = function()
-        print("Button clicked!")
-    end,
+local Window = CosyHub:CreateWindow({
+    Title       = "CosyHub | My Script",
+    Description = "by Cosy~~",
+    TabWidth    = 130,
+    SizeUi      = UDim2.fromOffset(600, 360),
 })
 ```
 
+The window opens with an animated scale-in effect and can be dragged by its title bar. Press **RightShift** (configurable) to toggle the window open/closed.
+
 ---
 
-### Input (TextBox)
+### `Window:CreateTab(config)`
+
+Adds a tab to the left sidebar. Returns a `Tab` object.
+
+| Key | Type | Description |
+|---|---|---|
+| `Name` | string | Label shown in the sidebar |
+| `Icon` | string | Asset ID for a 20×20 icon (e.g. `"rbxassetid://4483362458"`) |
 
 ```lua
-local input = Sec:AddInput({
-    Title    = "Player Name",
-    Content  = "Enter player name",
-    Default  = "",
-    Callback = function(value)
-        print("Input value:", value)
-    end,
-})
-
-input:Set("hello")
-print(input.Value)
+local Tab = Window:CreateTab({ Name = "ESP", Icon = "rbxassetid://4483362458" })
 ```
 
 ---
 
-### Dropdown
+### `Tab:AddSection(title, open)`
 
-```lua
-local dropdown = Sec:AddDropdown({
-    Title    = "Choose Mode",
-    Content  = "Select a mode",
-    Multi    = false,
-    Options  = {"Option A", "Option B", "Option C"},
-    Default  = {"Option A"},
-    Callback = function(selected)
-        -- selected is always a table even if Multi=false
-        print("Selected:", selected[1])
-    end,
-})
-
--- Refresh options:
-dropdown:Refresh({"New A", "New B"}, {"New A"})
-
--- Set from code:
-dropdown:Set({"Option B"})
-
-print(dropdown.Value)
-```
-
-> If `Multi = true`, `selected` will be a table with multiple entries.
-
----
-
-### ColorPicker
-
-```lua
-local picker = Sec:AddColorPicker({
-    Title    = "ESP Color",
-    Color    = Color3.fromRGB(255, 0, 0),
-    Callback = function(color)
-        print("Color:", color)
-    end,
-})
-
-picker:Set(Color3.fromRGB(0, 255, 0))
-print(picker.Color)
-```
-
-Click the color swatch to open the modal. Drag the canvas to pick saturation/value, drag the hue slider to pick the base color, or type a hex code directly.
-
----
-
-### Paragraph
-
-```lua
-local para = Sec:AddParagraph({
-    Title   = "Dev",
-    Content = "Cosy~~",
-})
-
--- Update from code:
-para:Set({ Title = "Version", Content = "v1.0" })
-```
-
----
-
-### Separator
-
-```lua
-local sep = Sec:AddSeperator({
-    Title = "-- Settings --",
-})
-
-sep:Set({ Title = "-- New Title --" })
-```
-
----
-
-### Line
-
-```lua
-Sec:AddLine()
-```
-
----
-
-## Notification
-
-```lua
-CosyHub:SetNotification({
-    Title       = "Title",
-    Description = "Sub",
-    Content     = "Detailed content goes here",
-    Time        = 0.4,
-    Delay       = 5,
-})
-```
+Adds a collapsible section inside a tab. Returns a `Section` object you use to add elements.
 
 | Parameter | Type | Description |
 |---|---|---|
-| `Title` | string | Notification title |
-| `Description` | string | Red sub-title shown next to the title |
-| `Content` | string | Main body text |
-| `Time` | number | Animation in/out duration (seconds) |
-| `Delay` | number | Time before auto-close (seconds) |
+| `title` | string | Section header text |
+| `open` | boolean | Whether the section starts expanded |
+
+```lua
+local Section = Tab:AddSection("Player Settings", true)
+```
 
 ---
 
-## Full Example
+### `Section:AddToggle(config)`
+
+Adds an on/off toggle switch. Returns a toggle object with a `:Set(value)` method.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `Title` | string | `""` | Label next to the toggle |
+| `Content` | string | `""` | Optional small subtitle text |
+| `Default` | boolean | `false` | Starting state |
+| `Callback` | function | — | Called with `(value: boolean)` whenever toggled |
 
 ```lua
-local CosyHub = loadstring(game:HttpGet("RAW_URL_TO_CosyHub.lua"))()
-
-local Window = CosyHub:CreateWindow({
-    Title       = "My Hub",
-    Description = "by Me",
-    TabWidth    = 110,
-    SizeUi      = UDim2.fromOffset(580, 340),
-})
-
-local Tab1 = Window:CreateTab({ Name = "Main", Icon = "rbxassetid://4483362458" })
-
-local Sec1 = Tab1:AddSection("Features", true)
-
-Sec1:AddToggle({
-    Title    = "Fly",
+local myToggle = Section:AddToggle({
+    Title    = "Show ESP",
+    Content  = "Draws boxes on players",
     Default  = false,
     Callback = function(v)
-        print("Fly:", v)
+        espEnabled = v
     end,
 })
 
-Sec1:AddSlider({
-    Title     = "Fly Speed",
-    Min       = 1,
-    Max       = 200,
-    Increment = 1,
-    Default   = 50,
+myToggle:Set(true)
+```
+
+---
+
+### `Section:AddSlider(config)`
+
+Adds a draggable slider with a live value display and a text-input fallback. Returns a slider object with a `:Set(value)` method.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `Title` | string | `""` | Label above the slider |
+| `Content` | string | `""` | Unit label shown to the right of the value (e.g. `"m"`, `"px"`) |
+| `Min` | number | `0` | Minimum value |
+| `Max` | number | `100` | Maximum value |
+| `Increment` | number | `1` | Snap step |
+| `Default` | number | `50` | Starting value |
+| `Callback` | function | — | Called with `(value: number)` on release |
+
+```lua
+local distSlider = Section:AddSlider({
+    Title     = "Max Distance",
+    Content   = "m",
+    Min       = 50,
+    Max       = 1000,
+    Increment = 10,
+    Default   = 250,
     Callback  = function(v)
-        print("Speed:", v)
+        MAX_DIST = v
     end,
 })
 
-CosyHub:SetNotification({
-    Title   = "Loaded",
-    Content = "My Hub loaded successfully!",
-    Time    = 0.4,
-    Delay   = 3,
+distSlider:Set(500)
+```
+
+---
+
+### `Section:AddButton(config)`
+
+Adds a clickable button with a ripple effect. Returns a button object.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `Title` | string | `""` | Button label |
+| `Content` | string | `""` | Optional subtitle |
+| `Icon` | string | `""` | Asset ID for a small left-side icon |
+| `Callback` | function | — | Called on click |
+
+```lua
+Section:AddButton({
+    Title    = "Teleport to Spawn",
+    Content  = "Instant",
+    Icon     = "rbxassetid://7734010488",
+    Callback = function()
+        teleportPlayer()
+    end,
 })
 ```
 
 ---
 
-## Notes
+### `Section:AddInput(config)`
 
-- Framework automatically prevents AFK kick.
-- Notifications auto-close after `Delay` seconds.
-- Window has a minimize (`-`) and close (`X`) button. After minimizing, click the small icon in the corner of the screen to reopen.
-- You can use both array index and key name for Config: `Config[1]` = `Config.Title`, `Config[2]` = `Config.Content`, etc.
-- `CosyHub.Unloaded` is set to `true` when the user clicks close.
+Adds a single-line text input box. Returns an input object with a `:Set(value)` method.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `Title` | string | `""` | Label |
+| `Content` | string | `""` | Optional subtitle |
+| `Default` | string | `""` | Starting text |
+| `Callback` | function | — | Called with `(text: string)` when focus is lost |
+
+```lua
+local nameInput = Section:AddInput({
+    Title    = "Config Name",
+    Default  = "default",
+    Callback = function(v)
+        configName = v
+    end,
+})
+```
+
+---
+
+### `Section:AddDropdown(config)`
+
+Adds a dropdown selector. Supports single and multi-select modes. Returns a dropdown object with `:Set()`, `:AddOption()`, `:Clear()`, and `:Refresh()` methods.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `Title` | string | `""` | Label |
+| `Content` | string | `""` | Optional subtitle |
+| `Multi` | boolean | `false` | Allow multiple selections |
+| `Options` | table | `{}` | Array of option strings |
+| `Default` | table | `{}` | Array of initially-selected option strings |
+| `Callback` | function | — | Called with `(selected)` — a string (single) or table (multi) |
+
+```lua
+local modeDD = Section:AddDropdown({
+    Title    = "Line Origin",
+    Multi    = false,
+    Options  = { "Off", "Center", "Top", "Bottom" },
+    Default  = { "Center" },
+    Callback = function(sel)
+        local choice = type(sel) == "table" and sel[1] or sel
+        lineMode = tonumber(choice) or 1
+    end,
+})
+
+modeDD:Set({ "Top" })
+modeDD:Refresh({ "Off", "Center", "Top" }, { "Center" })
+```
+
+---
+
+### `Section:AddColorPicker(config)`
+
+Adds a color swatch that opens a floating modal with an HSV canvas, hue slider, and hex input. Returns a color picker object with a `:Set(Color3)` method.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `Title` | string | `""` | Label next to the swatch |
+| `Color` | Color3 | `Color3.new(1,1,1)` | Starting color |
+| `Callback` | function | — | Called live with `(color: Color3)` as the user drags |
+
+```lua
+local espColorPicker = Section:AddColorPicker({
+    Title    = "ESP Color",
+    Color    = Color3.fromRGB(0, 255, 255),
+    Callback = function(c)
+        espColor = c
+    end,
+})
+
+espColorPicker:Set(Color3.fromRGB(255, 100, 100))
+```
+
+---
+
+### `Section:AddHotkey(config)`
+
+Adds a keybind picker. Click the badge to start listening, then press any key to bind it. Returns a hotkey object with a `:Set(KeyCode)` method.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `Title` | string | `""` | Label |
+| `Default` | KeyCode | `Enum.KeyCode.Unknown` | Starting key |
+| `Callback` | function | — | Called with `(keyCode: EnumItem)` when a new key is picked |
+
+```lua
+local dashHotkeyPicker = Section:AddHotkey({
+    Title    = "Dash Hotkey",
+    Default  = Enum.KeyCode.V,
+    Callback = function(kc)
+        dashKey = kc
+    end,
+})
+```
+
+Modifier keys (Shift, Ctrl, Alt, CapsLock, Tab) are ignored by the picker.
+
+---
+
+### `Section:AddParagraph(config)`
+
+Adds a static read-only text block.
+
+| Key | Type | Description |
+|---|---|---|
+| `Title` | string | Bold heading |
+| `Content` | string | Body text beneath the heading |
+
+```lua
+Section:AddParagraph({
+    Title   = "Version",
+    Content = "v6.0",
+})
+```
+
+---
+
+### `Section:AddLine()`
+
+Inserts a thin horizontal divider line.
+
+```lua
+Section:AddLine()
+```
+
+---
+
+### `Section:AddSeperator(config)`
+
+Inserts a labeled separator row.
+
+| Key | Type | Description |
+|---|---|---|
+| `Title` | string | Label shown in the center of the separator |
+
+```lua
+Section:AddSeperator({ Title = "Advanced" })
+```
+
+---
+
+### `CosyHub:SetNotification(config)`
+
+Shows a slide-in notification card in the bottom-right corner.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `Title` | string | `""` | Bold heading |
+| `Description` | string | `""` | Secondary text (shown in accent color) |
+| `Content` | string | `""` | Body text |
+| `Time` | number | `0.5` | Slide animation duration in seconds |
+| `Delay` | number | `5` | How long the notification stays before fading |
+
+```lua
+CosyHub:SetNotification({
+    Title       = "Script Loaded",
+    Description = "CosyHub Evade",
+    Content     = "All systems ready.",
+    Time        = 0.4,
+    Delay       = 4,
+})
+```
+
+---
+
+## Global Bridges (`_G`)
+
+CosyHub exposes several `_G` values so outside scripts can talk to the UI:
+
+| Global | Type | Description |
+|---|---|---|
+| `_G._CosyLineBox` | table | Internal reference to the SmartBar line-origin box. Used by the ESP to compute line start positions. |
+| `_G._CosyToggleSettings` | function | Jumps to / back from the hidden Settings tab. |
+| `_G._CosyKeepOnScreen` | function `(bool)` | Enables or disables the keep-window-on-screen constraint. |
+| `_G._CosySetToggleKey` | function `(KeyCode)` | Changes the keyboard shortcut that opens/closes the window. |
+| `_G._CosyUnlockMouse` | function `(bool)` | Unlocks the mouse cursor while the window is open (useful for games that lock the camera). |
+
+---
+
+## SmartBar
+
+The floating bar at the top of the screen shows your avatar, display name, and a logo button. Clicking the logo toggles the main window. Minimising the window triggers a **shatter → re-absorb → fly-in** particle animation.
+
+---
+
+## Built-in Features
+
+- **Search bar** — type in the top search box to instantly find any toggle, slider, or button across all tabs. Results show the feature name and its tab/section path. Clicking a result jumps to the tab and highlights the element with a pulse animation.
+- **Drag** — grab the title bar to move the window anywhere on screen.
+- **Settings tab** — hidden from the sidebar; accessible via the ⚙ button in the title bar. Contains toggle-key binding, keep-on-screen, mouse-unlock, and window-reset controls.
+- **Color picker modal** — full HSV canvas + hue slider + hex input, with smooth open/close animation.
+
+---
+
+## License
+
+MIT — use freely, credit appreciated.
