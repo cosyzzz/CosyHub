@@ -5,7 +5,7 @@ A lightweight, polished Roblox UI framework with a floating SmartBar, animated w
 Load it in any script with a single line:
 
 ```lua
-local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/CosyHub/main/CosyHub.lua", true))()
+local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/cosyzzz/CosyHub/refs/heads/main/CosyHub.lua", true))()
 ```
 
 ---
@@ -13,7 +13,7 @@ local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_
 ## Quick Start
 
 ```lua
-local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/CosyHub/main/CosyHub.lua", true))()
+local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/cosyzzz/CosyHub/refs/heads/main/CosyHub.lua", true))()
 
 local Window = CosyHub:CreateWindow({
     Title       = "My Script",
