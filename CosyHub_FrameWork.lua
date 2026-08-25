@@ -665,7 +665,7 @@ function CosyHub:CreateWindow(Config)
 
     local _settingsImg = SettingsBg:FindFirstChild("Img")
     task.spawn(function()
-        local iconUrl = "https://raw.githubusercontent.com/cosyzzz/CosyHub/main/CosyHub_Assets/settingicon.png"
+        local iconUrl = "https://raw.githubusercontent.com/cosyzzz/CosyHub/main/CosyHub_Assets/setting_icon.png"
         local iconPath = "CosyHub/settings_icon.png"
         pcall(function()
             if not isfolder("CosyHub") then makefolder("CosyHub") end
