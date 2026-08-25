@@ -13,7 +13,7 @@ local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/cosyz
 ## Quick Start
 
 ```lua
-local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/cosyzzz/CosyHub/refs/heads/main/CosyHub.lua", true))()
+local CosyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/cosyzzz/CosyHub/refs/heads/main/CosyHub_FrameWork.lua", true))()
 
 local Window = CosyHub:CreateWindow({
     Title       = "My Script",
