@@ -628,7 +628,7 @@ function CosyHub:CreateWindow(Config)
         Custom:Create("UICorner", { CornerRadius=UDim.new(0,7) }, Bg)
 
         local Img = Custom:Create("ImageLabel", {
-            Image = "rbxassetid://"..icon,
+            Image = (icon ~= "" and "rbxassetid://"..icon or ""),
             ImageColor3 = Color3.fromRGB(200,200,200),
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
@@ -660,27 +660,41 @@ function CosyHub:CreateWindow(Config)
 
     local CloseBtn,   CloseBg   = makeTopBtn("10137832201", -8,   "Close")
     local MinBtn,     MinBg     = makeTopBtn("10137941941", -46,  "Min")
-    local SettingsBtn, SettingsBg = makeTopBtn("10137941941", -84, "Settings")
+    local SettingsBtn, SettingsBg = makeTopBtn("", -84, "Settings")
     local ResizeBtn,  ResizeBg  = makeTopBtn("6034818372",  -122, "Resize")
 
     local _settingsImg = SettingsBg:FindFirstChild("Img")
     task.spawn(function()
-        local iconUrl = "https://raw.githubusercontent.com/cosyzzz/CosyHub/main/CosyHub_Assets/setting_icon.png"
-        local iconPath = "CosyHub/settings_icon.png"
+        local req            = (syn and syn.request) or (http and http.request) or http_request or request
+        local hasCustomAsset = type(getcustomasset) == "function"
+        local hasFilesystem  = type(writefile)  == "function"
+                            and type(makefolder) == "function"
+                            and type(isfile)     == "function"
+                            and type(isfolder)   == "function"
+
+        if not (req and hasCustomAsset and hasFilesystem) then return end
+
+        local iconUrl  = "https://raw.githubusercontent.com/cosyzzz/CosyHub/main/CosyHub_Assets/setting_icon.png"
+        local iconPath = "CosyHub/setting_icon.png"
+
         pcall(function()
+            -- 1. Đảm bảo folder tồn tại
             if not isfolder("CosyHub") then makefolder("CosyHub") end
+
+            -- 2. Download nếu chưa có file
             if not isfile(iconPath) then
-                local req = (syn and syn.request) or (http and http.request) or http_request or request
-                if req then
-                    local res = req({ Url = iconUrl, Method = "GET" })
-                    if res and res.Body and #res.Body > 0 then
-                        writefile(iconPath, res.Body)
-                    end
+                local ok, res = pcall(req, { Url = iconUrl, Method = "GET" })
+                if ok and type(res) == "table"
+                   and type(res.Body) == "string"
+                   and #res.Body > 0 then
+                    pcall(writefile, iconPath, res.Body)
                 end
             end
-            if isfile(iconPath) and getcustomasset then
-                local asset = getcustomasset(iconPath)
-                if _settingsImg and asset and asset ~= "" then
+
+            -- 3. getcustomasset chỉ sau khi chắc file đã tồn tại
+            if isfile(iconPath) then
+                local ok, asset = pcall(getcustomasset, iconPath)
+                if ok and asset and asset ~= "" and _settingsImg then
                     _settingsImg.Image = asset
                 end
             end
