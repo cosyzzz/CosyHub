@@ -29,9 +29,64 @@ end
 
 Custom:EnabledAFK()
 
+-- ============================================================
+-- CUSTOM ASSET LOADER
+-- ============================================================
+local customAssets = {}
+local _BaseURL     = "https://raw.githubusercontent.com/cosyzzz/CosyHub/main/CosyHub_Assets/"
+local _AssetFolder = "CosyHub/Assets"
+local _assetFiles  = {
+    logo_icon         = "logo_icon.png",
+    ripplecircle_icon = "ripplecircle_icon.png",
+    close_icon        = "close_icon.png",
+    min_icon          = "min_icon.png",
+    arrow_icon        = "arrow_icon.png",
+    chevron_icon      = "chevron_icon.png",
+    button_icon       = "button_icon.png",
+    selection_icon    = "selection_icon.png",
+    setting_icon      = "setting_icon.png",
+}
+for id in pairs(_assetFiles) do customAssets[id] = "" end
+
+pcall(function()
+    local req            = (syn and syn.request) or (http and http.request) or http_request or request
+    local hasCustomAsset = type(getcustomasset) == "function"
+    local hasFilesystem  = type(writefile)  == "function"
+                        and type(makefolder) == "function"
+                        and type(isfile)     == "function"
+                        and type(isfolder)   == "function"
+    if not (req and hasCustomAsset and hasFilesystem) then return end
+
+    if not isfolder("CosyHub")    then makefolder("CosyHub")    end
+    if not isfolder(_AssetFolder) then makefolder(_AssetFolder) end
+
+    for id, filename in pairs(_assetFiles) do
+        local path = _AssetFolder.."/"..filename
+        if not isfile(path) then
+            local ok, res = pcall(req, { Url = _BaseURL..filename, Method = "GET" })
+            if ok and type(res) == "table"
+               and type(res.Body) == "string"
+               and #res.Body > 0 then
+                pcall(writefile, path, res.Body)
+            end
+        end
+    end
+
+    for id, filename in pairs(_assetFiles) do
+        local path = _AssetFolder.."/"..filename
+        if isfile(path) then
+            local ok, asset = pcall(getcustomasset, path)
+            if ok and asset and asset ~= "" then
+                customAssets[id] = asset
+            end
+        end
+    end
+end)
+-- ============================================================
+
 local function OpenClose()
     
-    local LOGO_ID = "rbxassetid://3926305904"
+    local LOGO_ID = customAssets.logo_icon
 
     local SmartGui = Custom:Create("ScreenGui", {
         Name           = "CosySmartBar",
@@ -340,7 +395,7 @@ local function CircleClick(Button, X, Y)
     task.spawn(function()
         Button.ClipsDescendants = true
         local Circle = Instance.new("ImageLabel")
-        Circle.Image              = "rbxassetid://106471194043211"
+        Circle.Image              = customAssets.ripplecircle_icon
         Circle.ImageColor3        = Color3.fromRGB(80,80,80)
         Circle.ImageTransparency  = 0.9
         Circle.BackgroundColor3   = Color3.fromRGB(255,255,255)
@@ -628,7 +683,7 @@ function CosyHub:CreateWindow(Config)
         Custom:Create("UICorner", { CornerRadius=UDim.new(0,7) }, Bg)
 
         local Img = Custom:Create("ImageLabel", {
-            Image = (icon ~= "" and "rbxassetid://"..icon or ""),
+            Image = icon or "",
             ImageColor3 = Color3.fromRGB(200,200,200),
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
@@ -658,48 +713,12 @@ function CosyHub:CreateWindow(Config)
         return Btn, Bg
     end
 
-    local CloseBtn,   CloseBg   = makeTopBtn("10137832201", -8,   "Close")
-    local MinBtn,     MinBg     = makeTopBtn("10137941941", -46,  "Min")
-    local SettingsBtn, SettingsBg = makeTopBtn("", -84, "Settings")
-    local ResizeBtn,  ResizeBg  = makeTopBtn("6034818372",  -122, "Resize")
+    local CloseBtn,    CloseBg    = makeTopBtn(customAssets.close_icon,   -8,   "Close")
+    local MinBtn,      MinBg      = makeTopBtn(customAssets.min_icon,     -46,  "Min")
+    local SettingsBtn, SettingsBg = makeTopBtn(customAssets.setting_icon, -84,  "Settings")
+    local ResizeBtn,   ResizeBg   = makeTopBtn(customAssets.arrow_icon,   -122, "Resize")
 
-    local _settingsImg = SettingsBg:FindFirstChild("Img")
-    task.spawn(function()
-        local req            = (syn and syn.request) or (http and http.request) or http_request or request
-        local hasCustomAsset = type(getcustomasset) == "function"
-        local hasFilesystem  = type(writefile)  == "function"
-                            and type(makefolder) == "function"
-                            and type(isfile)     == "function"
-                            and type(isfolder)   == "function"
 
-        if not (req and hasCustomAsset and hasFilesystem) then return end
-
-        local iconUrl  = "https://raw.githubusercontent.com/cosyzzz/CosyHub/main/CosyHub_Assets/setting_icon.png"
-        local iconPath = "CosyHub/setting_icon.png"
-
-        pcall(function()
-            -- 1. Đảm bảo folder tồn tại
-            if not isfolder("CosyHub") then makefolder("CosyHub") end
-
-            -- 2. Download nếu chưa có file
-            if not isfile(iconPath) then
-                local ok, res = pcall(req, { Url = iconUrl, Method = "GET" })
-                if ok and type(res) == "table"
-                   and type(res.Body) == "string"
-                   and #res.Body > 0 then
-                    pcall(writefile, iconPath, res.Body)
-                end
-            end
-
-            -- 3. getcustomasset chỉ sau khi chắc file đã tồn tại
-            if isfile(iconPath) then
-                local ok, asset = pcall(getcustomasset, iconPath)
-                if ok and asset and asset ~= "" and _settingsImg then
-                    _settingsImg.Image = asset
-                end
-            end
-        end)
-    end)
 
     Custom:Create("Frame", {
         AnchorPoint = Vector2.new(0.5,0),
@@ -761,7 +780,7 @@ function CosyHub:CreateWindow(Config)
     Custom:Create("UIStroke", { Color=Color3.fromRGB(60,60,65), Thickness=1, Transparency=0.3 }, SearchOuter)
 
     Custom:Create("ImageLabel", {
-        Image              = "rbxassetid://3926305904",
+        Image              = customAssets.logo_icon,
         ImageRectOffset    = Vector2.new(964, 324),
         ImageRectSize      = Vector2.new(36, 36),
         ImageColor3        = Color3.fromRGB(120,120,125),
@@ -2257,7 +2276,7 @@ function CosyHub:CreateWindow(Config)
             }, SectionReal)
 
             local FeatureImg = Custom:Create("ImageLabel", {
-                Image    = "rbxassetid://125609963478878",
+                Image    = customAssets.chevron_icon,
                 AnchorPoint = Vector2.new(0.5,0.5),
                 BackgroundTransparency = 0.999,
                 BorderSizePixel = 0,
@@ -2476,7 +2495,7 @@ function CosyHub:CreateWindow(Config)
             function Item:AddButton(Config)
                 local T  = Config[1] or Config.Title or ""
                 local C  = Config[2] or Config.Content or ""
-                local Ic = Config[3] or Config.Icon or "rbxassetid://7734010488"
+                local Ic = Config[3] or Config.Icon or customAssets.button_icon
                 local CB = Config[4] or Config.Callback or function() end
                 local BF = {}
 
@@ -3132,7 +3151,7 @@ function CosyHub:CreateWindow(Config)
                 }, SelFrame)
 
                 local ArrowIcon = Custom:Create("ImageLabel", {
-                    Image = "rbxassetid://6034818372", 
+                    Image = customAssets.arrow_icon,
                     ImageColor3 = Color3.fromRGB(200, 200, 200),
                     ImageTransparency = 0,
                     BackgroundTransparency = 1,
